@@ -1,0 +1,158 @@
+[gd_scene load_steps=19 format=3 uid="uid://bk40nnuwwsfaf"]
+
+[ext_resource type="Shader" path="res://Shader/color_swap.gdshader" id="1_8v7xh"]
+[ext_resource type="Script" path="res://Characters/Player/player2.gd" id="2_1v786"]
+[ext_resource type="Script" path="res://Shader/shader_overlay.gd" id="3_3d2o5"]
+[ext_resource type="FontFile" uid="uid://dv7cqf01s7sg4" path="res://Assets/BitPotionExt.ttf" id="4_bquqn"]
+[ext_resource type="Texture2D" uid="uid://w3yu2dwf8o71" path="res://Assets/Characters/witch.png" id="4_iwqcm"]
+[ext_resource type="PackedScene" uid="uid://hx2bj5xoose8" path="res://Levels/gui.tscn" id="4_og1l6"]
+[ext_resource type="AudioStream" uid="uid://50r31ciostm7" path="res://jump.mp3" id="7_vu2lj"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_w5vqt"]
+shader = ExtResource("1_8v7xh")
+shader_parameter/primary = Color(0, 0, 0, 1)
+shader_parameter/secondary = Color(1, 0.121569, 1, 1)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ppyij"]
+shader = ExtResource("1_8v7xh")
+shader_parameter/primary = Color(0, 0, 0, 1)
+shader_parameter/secondary = Color(1, 1, 1, 1)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_4t5cs"]
+size = Vector2(16, 48)
+
+[sub_resource type="Animation" id="Animation_fvmrp"]
+resource_name = "Fall"
+step = 0.0909091
+
+[sub_resource type="Animation" id="Animation_v5u4f"]
+resource_name = "Idle"
+loop_mode = 1
+step = 0.0909091
+
+[sub_resource type="Animation" id="Animation_5oyea"]
+resource_name = "Jump"
+step = 0.0909091
+
+[sub_resource type="Animation" id="Animation_8rob4"]
+length = 0.001
+
+[sub_resource type="Animation" id="Animation_rk283"]
+resource_name = "Run"
+step = 0.0909091
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_2ujyw"]
+_data = {
+"Fall": SubResource("Animation_fvmrp"),
+"Idle": SubResource("Animation_v5u4f"),
+"Jump": SubResource("Animation_5oyea"),
+"RESET": SubResource("Animation_8rob4"),
+"Run": SubResource("Animation_rk283")
+}
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_his6e"]
+size = Vector2(14, 2)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ku6ww"]
+size = Vector2(16, 48)
+
+[node name="Player" type="CharacterBody2D"]
+process_mode = 1
+material = SubResource("ShaderMaterial_w5vqt")
+collision_layer = 2
+script = ExtResource("2_1v786")
+
+[node name="Camera" type="Camera2D" parent="."]
+limit_left = 0
+limit_right = 1024
+limit_bottom = 576
+limit_smoothed = true
+
+[node name="ShaderOverlay" type="CanvasLayer" parent="Camera"]
+unique_name_in_owner = true
+layer = 10
+script = ExtResource("3_3d2o5")
+
+[node name="Overlay" type="ColorRect" parent="Camera/ShaderOverlay"]
+z_index = -99
+material = SubResource("ShaderMaterial_ppyij")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(1, 1, 1, 0)
+
+[node name="GUI" parent="Camera" instance=ExtResource("4_og1l6")]
+process_priority = 1
+
+[node name="TimeDisplay" type="Label" parent="Camera/GUI"]
+unique_name_in_owner = true
+offset_left = 8.0
+offset_top = 32.0
+offset_right = 136.0
+offset_bottom = 60.0
+theme_override_fonts/font = ExtResource("4_bquqn")
+theme_override_font_sizes/font_size = 32
+text = "00:00:00"
+
+[node name="Height" type="Label" parent="Camera/GUI"]
+unique_name_in_owner = true
+offset_left = 8.0
+offset_right = 119.0
+offset_bottom = 28.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("4_bquqn")
+theme_override_font_sizes/font_size = 32
+text = "Height: "
+
+[node name="Sprite" type="Sprite2D" parent="."]
+position = Vector2(3, 0)
+texture = ExtResource("4_iwqcm")
+offset = Vector2(-6, 0)
+
+[node name="Collision" type="CollisionShape2D" parent="."]
+position = Vector2(0, 8)
+shape = SubResource("RectangleShape2D_4t5cs")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+root_node = NodePath("../Sprite")
+libraries = {
+"": SubResource("AnimationLibrary_2ujyw")
+}
+
+[node name="AutoJumpTimer" type="Timer" parent="."]
+one_shot = true
+
+[node name="GraceTimer" type="Timer" parent="."]
+one_shot = true
+
+[node name="GroundCheck" type="Area2D" parent="."]
+
+[node name="Collision" type="CollisionShape2D" parent="GroundCheck"]
+position = Vector2(0, 33)
+shape = SubResource("RectangleShape2D_his6e")
+
+[node name="WindCheck" type="Area2D" parent="."]
+
+[node name="Collision" type="CollisionShape2D" parent="WindCheck"]
+position = Vector2(0, 8)
+shape = SubResource("RectangleShape2D_ku6ww")
+
+[node name="Timer" type="Timer" parent="."]
+autostart = true
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("7_vu2lj")
+
+[connection signal="item_selected" from="Camera/GUI/Pause/OptionsPanel/CenterContainer/VBoxContainer/OptionButton" to="." method="_on_option_button_item_selected"]
+[connection signal="timeout" from="AutoJumpTimer" to="." method="_on_auto_jump_timer_timeout"]
+[connection signal="timeout" from="GraceTimer" to="." method="_on_grace_timer_timeout"]
+[connection signal="body_entered" from="GroundCheck" to="." method="_on_ground_check_body_entered"]
+[connection signal="body_shape_entered" from="GroundCheck" to="." method="_on_ground_check_body_shape_entered"]
+[connection signal="area_entered" from="WindCheck" to="." method="_on_wind_check_area_entered"]
+[connection signal="area_exited" from="WindCheck" to="." method="_on_wind_check_area_exited"]
+[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
+
+[editable path="Camera/GUI"]

@@ -1,0 +1,34 @@
+[gd_scene load_steps=4 format=3 uid="uid://b4ssmh6kp6xfw"]
+
+[ext_resource type="Texture2D" uid="uid://ddddu8t4k8ocr" path="res://Assets/Tiles/wind_h.png" id="2_sre1i"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_xf464"]
+size = Vector2(240, 32)
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_hvc7c"]
+particle_flag_disable_z = true
+emission_shape = 3
+emission_box_extents = Vector3(16, 16, 1)
+spread = 0.0
+initial_velocity_min = 212.87
+initial_velocity_max = 212.87
+gravity = Vector3(0, 0, 0)
+turbulence_noise_scale = 0.0
+
+[node name="Wind" type="Area2D"]
+metadata/direction = Vector2(0, 0)
+
+[node name="Collision" type="CollisionShape2D" parent="."]
+position = Vector2(119.5, 16)
+shape = SubResource("RectangleShape2D_xf464")
+
+[node name="Particles" type="GPUParticles2D" parent="."]
+position = Vector2(10, 14)
+amount = 6
+process_material = SubResource("ParticleProcessMaterial_hvc7c")
+texture = ExtResource("2_sre1i")
+visibility_rect = Rect2(-9.24807, -11.2172, 238.263, 26.5506)
+trail_enabled = true
+trail_lifetime = 0.1
+trail_sections = 3
+trail_section_subdivisions = 2

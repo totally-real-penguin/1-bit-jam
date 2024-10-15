@@ -1,0 +1,34 @@
+[gd_scene load_steps=5 format=3 uid="uid://78dtel6xxf7j"]
+
+[ext_resource type="Texture2D" uid="uid://0bu1usal5vwx" path="res://Assets/Tiles/checkered.png" id="1_b6055"]
+[ext_resource type="Texture2D" uid="uid://u0lhsiyq7t0y" path="res://Assets/Tiles/moving_platform.png" id="2_ljrnl"]
+
+[sub_resource type="Curve2D" id="Curve2D_3yj0r"]
+_data = {
+"points": PackedVector2Array(0, 0, 0, 90, 0, 0, 0, 90, -44.6134, -2.94314, 0, 32)
+}
+point_count = 2
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_hwd18"]
+size = Vector2(32, 2)
+
+[node name="MovingPlatform" type="Path2D"]
+curve = SubResource("Curve2D_3yj0r")
+
+[node name="Line2D" type="Line2D" parent="."]
+points = PackedVector2Array(0, 0, 0, 160)
+width = 4.0
+texture = ExtResource("1_b6055")
+texture_mode = 1
+
+[node name="PathFollow2D" type="PathFollow2D" parent="."]
+rotation = 1.5708
+
+[node name="Platform" type="AnimatableBody2D" parent="PathFollow2D"]
+rotation = -1.5708
+
+[node name="Sprite2D" type="Sprite2D" parent="PathFollow2D/Platform"]
+texture = ExtResource("2_ljrnl")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PathFollow2D/Platform"]
+shape = SubResource("RectangleShape2D_hwd18")

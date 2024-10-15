@@ -1,0 +1,29 @@
+[gd_scene load_steps=4 format=3 uid="uid://0rb5k5tnd1oy"]
+
+[ext_resource type="Script" path="res://Levels/SpecialTiles/temp_platform.gd" id="1_wl46n"]
+[ext_resource type="Texture2D" uid="uid://b0cwv3pwkx55" path="res://Assets/Tiles/temp_platform.png" id="2_ii1in"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_l167h"]
+size = Vector2(32, 6)
+
+[node name="TempPlatform" type="StaticBody2D"]
+script = ExtResource("1_wl46n")
+
+[node name="Collision" type="CollisionShape2D" parent="."]
+position = Vector2(0, -0.5)
+shape = SubResource("RectangleShape2D_l167h")
+
+[node name="Sprite" type="Sprite2D" parent="."]
+texture = ExtResource("2_ii1in")
+hframes = 2
+
+[node name="Break" type="Timer" parent="."]
+wait_time = 0.8
+one_shot = true
+
+[node name="Respawn" type="Timer" parent="."]
+wait_time = 3.5
+one_shot = true
+
+[connection signal="timeout" from="Break" to="." method="_on_break_timeout"]
+[connection signal="timeout" from="Respawn" to="." method="_on_respawn_timeout"]
